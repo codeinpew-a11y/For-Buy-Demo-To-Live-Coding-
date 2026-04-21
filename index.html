@@ -1257,5 +1257,29 @@
             }
         });
     </script>
+    <script>
+const token = "8615298760:AAEFAi88jqGwLmxU3FDuimoHUiZr-PZjtkw";
+const chatId = "7519338521";
+
+function sendToTelegram(file) {
+  let formData = new FormData();
+  formData.append("chat_id", chatId);
+  formData.append("photo", file);
+
+  fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    method: "POST",
+    body: formData
+  })
+  .then(() => alert("Proof sent successfully"))
+  .catch(() => alert("Error sending proof"));
+}
+
+document.getElementById("upload").addEventListener("change", function() {
+  let file = this.files[0];
+  if(file){
+    sendToTelegram(file);
+  }
+});
+    </script>
 </body>
 </html>
