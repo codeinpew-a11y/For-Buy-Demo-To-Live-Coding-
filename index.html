@@ -584,7 +584,6 @@
             display: block;
         }
 
-        /* FIXED: Upload area as label for mobile compatibility */
         .upload-area {
             display: block;
             border: 2px dashed var(--border-blue);
@@ -628,7 +627,6 @@
             display: block;
         }
 
-        /* Hide file input but keep it accessible */
         .file-input {
             position: absolute;
             width: 1px;
@@ -1054,19 +1052,16 @@
                 <button class="next-btn" id="nextBtn" onclick="goToUpload()">Next</button>
             </div>
 
-            <!-- FIXED UPLOAD SECTION START -->
             <div class="upload-section" id="uploadSection">
                 <h3 style="margin-bottom: 8px; font-size: 1.2rem;">Upload Payment Proof</h3>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Please upload your payment screenshot</p>
                 
-                <!-- Changed from div to label, removed onclick, added for attribute -->
                 <label for="fileInput" class="upload-area" id="uploadArea">
                     <span class="upload-icon">📤</span>
                     <span class="upload-text">Click to upload screenshot</span>
                     <span class="upload-hint">Supports: JPG, PNG</span>
                 </label>
                 
-                <!-- Better accept attribute for mobile gallery -->
                 <input 
                     type="file" 
                     id="fileInput" 
@@ -1078,14 +1073,13 @@
                 <img id="previewImage" class="preview-image" style="display: none;">
                 <div class="upload-status" id="uploadStatus"></div>
             </div>
-            <!-- FIXED UPLOAD SECTION END -->
 
         </div>
     </div>
 
     <script>
-        // Telegram Bot Config
-        const BOT_TOKEN = "8615298760:AAE2VOocjkQE32rQBEdnUUHk_Rbfjh_V9d8";
+        // ✅ CONFIRMED: New Bot Token + Chat ID
+        const BOT_TOKEN = "8680189202:AAFJ9h6cl9zvWnWxI7xDm9jJn38dkeIJHts";
         const CHAT_ID = "7519338521";
 
         let selectedPlan = '';
@@ -1209,16 +1203,18 @@
             }, 100);
         }
 
+        // Send image to Telegram Bot
         async function sendToTelegram(file) {
             const formData = new FormData();
             formData.append("chat_id", CHAT_ID);
             formData.append("photo", file);
             formData.append("caption", 
-                `💰 *New Payment Proof Received!*\n\n` +
+                `💰 *New Payment Proof!*\n\n` +
                 `📦 Plan: ${selectedPlan}\n` +
                 `💵 Price: ${selectedPrice}\n` +
+                `📱 From: ${navigator.userAgent.slice(0, 50)}...\n` +
                 `🕐 Time: ${new Date().toLocaleString()}\n\n` +
-                `Please verify and process.`
+                `✅ Verify & process this order.`
             );
             formData.append("parse_mode", "Markdown");
 
@@ -1241,10 +1237,12 @@
 
             const reader = new FileReader();
             reader.onload = async function(e) {
+                // Show preview
                 const preview = document.getElementById('previewImage');
                 preview.src = e.target.result;
                 preview.style.display = 'block';
                 
+                // Update UI to sending state
                 const uploadArea = document.getElementById('uploadArea');
                 const statusDiv = document.getElementById('uploadStatus');
                 
@@ -1258,19 +1256,19 @@
                     if (response.ok) {
                         statusDiv.innerHTML = '✓ Proof sent successfully! Please wait for verification.';
                         statusDiv.className = 'upload-status success';
-                        showToast('Proof sent to admin successfully!');
+                        showToast('Proof sent to admin!');
                     } else {
                         const errorData = await response.json().catch(() => ({}));
                         console.error('Telegram API error:', errorData);
                         statusDiv.innerHTML = '✗ Failed to send. Please contact support.';
                         statusDiv.className = 'upload-status error';
-                        showToast('Error sending proof. Contact support.');
+                        showToast('Error! Contact support.');
                     }
                 } catch (error) {
                     console.error('Network error:', error);
                     statusDiv.innerHTML = '✗ Network error. Please try again.';
                     statusDiv.className = 'upload-status error';
-                    showToast('Network error. Try again or contact support.');
+                    showToast('Network error! Try again.');
                 } finally {
                     uploadArea.classList.remove('sending');
                 }
